@@ -3696,7 +3696,7 @@ SMODS.Blind{ -- The Prince
     atlas = 'bunco_blinds'
 }
 
-SMODS.Blind{ -- The Depths
+--[[SMODS.Blind{ -- The Depths
     key = 'depths', loc_txt = loc.depths,
     boss = {min = 4},
 
@@ -3724,7 +3724,7 @@ SMODS.Blind{ -- The Depths
 
     pos = {y = 18},
     atlas = 'bunco_blinds'
-}
+}]]
 
 -- Finishers
 
