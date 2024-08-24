@@ -8,6 +8,8 @@ return {
             high_quality_shaders = 'High Quality Shaders',
             double_lovers = 'Double Lovers',
             jokerlike_consumable_editions = 'Editions in Consumables Slot',
+            fixed_badges = 'Fixed Badges',
+            fixed_sprites = 'Fixed Sprites',
 
             requires_restart = '(Requires game restart)',
 
@@ -1440,9 +1442,68 @@ return {
             ['name'] = 'Reactive',
             ['label'] = 'Reactive',
             ['text'] = {
-                [1] = 'Debuffed after {C:attention}#1#{} rounds',
-                [2] = '{C:attention}+1{} round when skipping',
-                [3] = 'a {C:attention}Blind{}, even if debuffed'
+                [1] = 'Debuffed if no blinds',
+                [2] = 'are skipped this Ante'
+            }
+        }
+    },
+
+    -- Stakes
+
+    cyan = {
+        ['en-us'] = {
+            ['description'] = {
+                ['name'] = 'Cyan Stake',
+                ['text'] = {
+                    [1] = 'Shop can have {C:attention}Scattering{} Jokers',
+                    [2] = '{C:inactive,s:0.8}(Destroys random Joker when sold or destroyed)'
+                }
+            },
+            ['sticker'] = {
+                ['name'] = 'Cyan Sticker',
+                ['text'] = {
+                    [1] = 'Used this Joker',
+                    [2] = 'to win on {C:attention}Cyan',
+                    [3] = '{C:attention}Stake{} difficulty'
+                }
+            }
+        }
+    },
+    pink = {
+        ['en-us'] = {
+            ['description'] = {
+                ['name'] = 'Pink Stake',
+                ['text'] = {
+                    [1] = 'Shop can have {C:attention}Hindered{} Jokers',
+                    [2] = '{C:inactive,s:0.8}(Stays in place until the end of the round after being sold)'
+                }
+            },
+            ['sticker'] = {
+                ['name'] = 'Pink Sticker',
+                ['text'] = {
+                    [1] = 'Used this Joker',
+                    [2] = 'to win on {C:attention}Pink',
+                    [3] = '{C:attention}Stake{} difficulty'
+                }
+            }
+        }
+    },
+    magenta = {
+        ['en-us'] = {
+            ['description'] = {
+                ['name'] = 'Magenta Stake',
+                ['text'] = {
+                    [1] = 'Shop can have {C:attention}Reactive{} Jokers',
+                    [2] = '{C:inactive,s:0.8}(Debuffed if no blinds are skipped this Ante)'
+                }
+            },
+            ['sticker'] = {
+                ['name'] = 'Magenta Sticker',
+                ['text'] = {
+                    [1] = 'Used this Joker',
+                    [2] = 'to win on {C:attention}Magenta',
+                    [3] = '{C:attention}Stake{} difficulty'
+                }
             }
         }
     }

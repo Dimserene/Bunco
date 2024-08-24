@@ -123,6 +123,7 @@ function bunco.process_loc_text()
 
     SMODS.process_loc_text(G.localization.descriptions.Other, 'temporary_extra_chips', loc.dictionary.temporary_extra_chips)
     SMODS.process_loc_text(G.localization.descriptions.Other, 'exotic_cards', loc.exotic_cards)
+    G.P_CENTERS['exotic_cards'] = {key = 'exotic_cards', set = 'Other'}
 
     global_bunco.loc.exceeded_score = loc.dictionary.exceeded_score
     global_bunco.loc.chips = loc.dictionary.chips
@@ -149,7 +150,9 @@ function bunco.config_tab()
                 G.P_CENTERS.c_lovers.config.max_highlighted = 1
             end
         end}),
-        create_toggle({label = loc.dictionary.jokerlike_consumable_editions, ref_table = bunco.config, ref_value = 'jokerlike_consumable_editions', callback = function() bunco:save_config() end})
+        create_toggle({label = loc.dictionary.jokerlike_consumable_editions, ref_table = bunco.config, ref_value = 'jokerlike_consumable_editions', callback = function() bunco:save_config() end}),
+        create_toggle({label = loc.dictionary.fixed_badges, ref_table = bunco.config, ref_value = 'fixed_badges', callback = function() bunco:save_config() end}),
+        create_toggle({label = loc.dictionary.fixed_sprites, info = {loc.dictionary.requires_restart}, ref_table = bunco.config, ref_value = 'fixed_sprites', callback = function() bunco:save_config() end})
     }}
 end
 
@@ -172,6 +175,169 @@ if config.colorful_finishers then bunco_colorful_finishers = true end
 
 if config.double_lovers then
     G.P_CENTERS.c_lovers.config.max_highlighted = 2
+end
+
+-- Fixed badges
+
+SMODS.Consumable:take_ownership('pluto', {
+    set_card_type_badge = function(self, card, badges)
+        badges[1] = create_badge(config.fixed_badges and localize('k_planet') or localize('k_dwarf_planet'), get_type_colour(self or card.config, card), nil, 1.2)
+    end
+})
+
+SMODS.Consumable:take_ownership('ceres', {
+    set_card_type_badge = function(self, card, badges)
+        badges[1] = create_badge(config.fixed_badges and localize('k_planet_q') or localize('k_dwarf_planet'), get_type_colour(self or card.config, card), nil, 1.2)
+    end
+})
+
+SMODS.Consumable:take_ownership('eris', {
+    set_card_type_badge = function(self, card, badges)
+        badges[1] = create_badge(config.fixed_badges and localize('k_planet_q') or localize('k_dwarf_planet'), get_type_colour(self or card.config, card), nil, 1.2)
+    end
+})
+
+-- Fixed sprites
+
+SMODS.Atlas({key = 'bunco_resprites_jokers', path = 'Resprites/Jokers.png', px = 71, py = 95})
+SMODS.Atlas({key = 'bunco_resprites_consumables', path = 'Resprites/Consumables.png', px = 71, py = 95})
+
+if config.fixed_sprites then
+
+    -- Jokers
+
+    SMODS.Joker:take_ownership('juggler', {
+        pos = coordinate(1),
+        atlas = 'bunco_resprites_jokers'
+    })
+
+    SMODS.Joker:take_ownership('drunkard', {
+        pos = coordinate(2),
+        atlas = 'bunco_resprites_jokers'
+    })
+
+    SMODS.Joker:take_ownership('acrobat', {
+        pos = coordinate(3),
+        atlas = 'bunco_resprites_jokers'
+    })
+
+    SMODS.Joker:take_ownership('credit_card', {
+        pos = coordinate(4),
+        atlas = 'bunco_resprites_jokers'
+    })
+
+    SMODS.Joker:take_ownership('troubadour', {
+        pos = coordinate(5),
+        atlas = 'bunco_resprites_jokers'
+    })
+
+    SMODS.Joker:take_ownership('even_steven', {
+        pos = coordinate(6),
+        atlas = 'bunco_resprites_jokers'
+    })
+
+    SMODS.Joker:take_ownership('odd_todd', {
+        pos = coordinate(7),
+        atlas = 'bunco_resprites_jokers'
+    })
+
+    SMODS.Joker:take_ownership('fibonacci', {
+        pos = coordinate(8),
+        atlas = 'bunco_resprites_jokers'
+    })
+
+    SMODS.Joker:take_ownership('drivers_license', {
+        pos = coordinate(9),
+        atlas = 'bunco_resprites_jokers'
+    })
+
+    SMODS.Joker:take_ownership('gift', {
+        pos = coordinate(10),
+        atlas = 'bunco_resprites_jokers'
+    })
+
+    SMODS.Joker:take_ownership('flash', {
+        pos = coordinate(11),
+        atlas = 'bunco_resprites_jokers'
+    })
+
+    SMODS.Joker:take_ownership('ramen', {
+        pos = coordinate(12),
+        atlas = 'bunco_resprites_jokers'
+    })
+
+    SMODS.Joker:take_ownership('selzer', {
+        pos = coordinate(13),
+        atlas = 'bunco_resprites_jokers'
+    })
+
+    -- Consumables
+
+    SMODS.Consumable:take_ownership('fool', {
+        pos = coordinate(1),
+        atlas = 'bunco_resprites_consumables'
+    })
+
+    SMODS.Consumable:take_ownership('lovers', {
+        pos = coordinate(2),
+        atlas = 'bunco_resprites_consumables'
+    })
+
+    SMODS.Consumable:take_ownership('chariot', {
+        pos = coordinate(3),
+        atlas = 'bunco_resprites_consumables'
+    })
+
+    SMODS.Consumable:take_ownership('wheel_of_fortune', {
+        pos = coordinate(4),
+        atlas = 'bunco_resprites_consumables'
+    })
+
+    SMODS.Consumable:take_ownership('tower', {
+        pos = coordinate(5),
+        atlas = 'bunco_resprites_consumables'
+    })
+
+    SMODS.Consumable:take_ownership('moon', {
+        pos = coordinate(6),
+        atlas = 'bunco_resprites_consumables'
+    })
+
+    SMODS.Consumable:take_ownership('world', {
+        pos = coordinate(7),
+        atlas = 'bunco_resprites_consumables'
+    })
+
+    SMODS.Consumable:take_ownership('soul', {
+        pos = coordinate(8),
+        atlas = 'bunco_resprites_consumables'
+    })
+
+    SMODS.Consumable:take_ownership('ceres', {
+        pos = coordinate(9),
+        atlas = 'bunco_resprites_consumables'
+    })
+
+    SMODS.Consumable:take_ownership('mercury', {
+        pos = coordinate(10),
+        atlas = 'bunco_resprites_consumables'
+    })
+
+    SMODS.Consumable:take_ownership('uranus', {
+        pos = coordinate(11),
+        atlas = 'bunco_resprites_consumables'
+    })
+
+    SMODS.Consumable:take_ownership('pluto', {
+        pos = coordinate(12),
+        atlas = 'bunco_resprites_consumables'
+    })
+
+    SMODS.Consumable:take_ownership('incantation', {
+        pos = coordinate(13),
+        atlas = 'bunco_resprites_consumables'
+    })
+
 end
 
 -- Temporary extra chips
@@ -267,8 +433,16 @@ function bunco.set_debuff(card)
     -- Reactive
 
     for i = 1, #G.jokers.cards do
-        if card == G.jokers.cards[i] and G.jokers.cards[i].ability.bunc_reactive and (G.jokers.cards[i].ability.bunc_reactive_tally or 0) <= 0 then
-            return true
+        if card == G.jokers.cards[i] and G.jokers.cards[i].ability.bunc_reactive then
+            local condition
+            for _, v in pairs(G.GAME.round_resets.blind_states) do
+                if v == 'Skipped' then
+                    condition = true
+                end
+            end
+            if not condition then
+                return true
+            end
         end
     end
 
@@ -2859,7 +3033,7 @@ SMODS.Consumable{ -- Quaoar
     set = 'Planet', atlas = 'bunco_planets',
     key = 'Quaoar', loc_txt = loc.quaoar,
     set_card_type_badge = function(self, card, badges)
-        badges[1] = create_badge('Planet?', get_type_colour(self or card.config, card), nil, 1.2)
+        badges[1] = create_badge(config.fixed_badges and localize('k_planet_q') or localize('k_dwarf_planet'), get_type_colour(self or card.config, card), nil, 1.2)
     end,
 
     config = {hand_type = 'bunc_Spectrum', softlock = true},
@@ -2877,7 +3051,7 @@ SMODS.Consumable{ -- Haumea
     set = 'Planet', atlas = 'bunco_planets',
     key = 'Haumea', loc_txt = loc.haumea,
     set_card_type_badge = function(self, card, badges)
-        badges[1] = create_badge('Planet?', get_type_colour(self or card.config, card), nil, 1.2)
+        badges[1] = create_badge(config.fixed_badges and localize('k_planet_q') or localize('k_dwarf_planet'), get_type_colour(self or card.config, card), nil, 1.2)
     end,
 
     config = {hand_type = 'bunc_Straight Spectrum', softlock = true},
@@ -2895,7 +3069,7 @@ SMODS.Consumable{ -- Sedna
     set = 'Planet', atlas = 'bunco_planets',
     key = 'Sedna', loc_txt = loc.sedna,
     set_card_type_badge = function(self, card, badges)
-        badges[1] = create_badge('Planet?', get_type_colour(self or card.config, card), nil, 1.2)
+        badges[1] = create_badge(config.fixed_badges and localize('k_planet_q') or localize('k_dwarf_planet'), get_type_colour(self or card.config, card), nil, 1.2)
     end,
 
     config = {hand_type = 'bunc_Spectrum House', softlock = true},
@@ -2913,7 +3087,7 @@ SMODS.Consumable{ -- Makemake
     set = 'Planet', atlas = 'bunco_planets',
     key = 'Makemake', loc_txt = loc.makemake,
     set_card_type_badge = function(self, card, badges)
-        badges[1] = create_badge('Planet?', get_type_colour(self or card.config, card), nil, 1.2)
+        badges[1] = create_badge(config.fixed_badges and localize('k_planet_q') or localize('k_dwarf_planet'), get_type_colour(self or card.config, card), nil, 1.2)
     end,
 
     config = {hand_type = 'bunc_Spectrum Five', softlock = true},
@@ -4412,6 +4586,11 @@ SMODS.Atlas({key = 'bunco_stickers', path = 'Stickers/Stickers.png', px = 71, py
 SMODS.Sticker{ -- Scattering
     key = 'scattering', loc_txt = loc.scattering,
 
+    apply = function(self, card, val)
+        if card.ability.eternal or card.ability.bunc_hindered or card.ability.bunc_reactive then return end
+        card.ability[self.key] = val
+    end,
+
     badge_colour = HEX('9eacbe'),
 
     order = 5,
@@ -4424,6 +4603,7 @@ SMODS.Sticker{ -- Hindered
     key = 'hindered', loc_txt = loc.hindered,
 
     apply = function(self, card, val)
+        if card.ability.eternal or card.ability.bunc_scattering or card.ability.bunc_reactive then return end
         card.ability[self.key] = val
         card.ability.bunc_hindered_sold = false
     end,
@@ -4439,17 +4619,10 @@ SMODS.Sticker{ -- Hindered
 SMODS.Sticker{ -- Reactive
     key = 'reactive', loc_txt = loc.reactive,
 
-    loc_vars = function(self, info_queue, card)
-        return {vars = {card.ability.bunc_reactive_tally or 1}}
-    end,
-
     apply = function(self, card, val)
+        if card.ability.eternal or card.ability.bunc_scattering or card.ability.bunc_hindered then return end
         card.ability[self.key] = val
-        if val then
-            card.ability[self.key..'_tally'] = 1
-        else
-            card.ability[self.key..'_tally'] = nil
-        end
+        if G.GAME and G.GAME.blind then G.GAME.blind:debuff_card(card) end
     end,
 
     badge_colour = HEX('8238c3'),
@@ -4458,6 +4631,68 @@ SMODS.Sticker{ -- Reactive
 
     pos = coordinate(3),
     atlas = 'bunco_stickers'
+}
+
+-- Stakes
+
+SMODS.Atlas({key = 'bunco_stakes', path = 'Stakes/Stakes.png', px = 29, py = 29})
+SMODS.Atlas({key = 'bunco_stake_stickers', path = 'Stickers/StickersStake.png', px = 71, py = 95})
+
+SMODS.Stake{ -- Cyan
+    key = 'cyan', loc_txt = loc.cyan,
+
+    unlocked_stake = 'bunc_pink',
+    applied_stakes = {'orange'},
+    above_stake = 'orange',
+
+    modifiers = function()
+        G.GAME.modifiers.enable_scattering_in_shop = true
+    end,
+
+    colour = HEX('1ceade'),
+
+    pos = coordinate(1),
+    sticker_pos = coordinate(1),
+    atlas = 'bunco_stakes',
+    sticker_atlas = 'bunco_stake_stickers'
+}
+
+SMODS.Stake{ -- Pink
+    key = 'pink', loc_txt = loc.pink,
+
+    unlocked_stake = 'bunc_magenta',
+    applied_stakes = {'bunc_cyan'},
+    above_stake = 'bunc_cyan',
+
+    modifiers = function()
+        G.GAME.modifiers.enable_hindered_in_shop = true
+    end,
+
+    colour = HEX('ff8ea4'),
+
+    pos = coordinate(2),
+    sticker_pos = coordinate(2),
+    atlas = 'bunco_stakes',
+    sticker_atlas = 'bunco_stake_stickers'
+}
+
+SMODS.Stake{ -- Magenta
+    key = 'magenta', loc_txt = loc.magenta,
+
+    unlocked_stake = 'gold',
+    applied_stakes = {'bunc_pink'},
+    above_stake = 'bunc_pink',
+
+    modifiers = function()
+        G.GAME.modifiers.enable_reactive_in_shop = true
+    end,
+
+    colour = HEX('cd47ea'),
+
+    pos = coordinate(3),
+    sticker_pos = coordinate(3),
+    atlas = 'bunco_stakes',
+    sticker_atlas = 'bunco_stake_stickers'
 }
 
 -- Mod compatibility
