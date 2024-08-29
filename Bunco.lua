@@ -538,6 +538,7 @@ end
 SMODS.Atlas({key = 'bunco_jokers', path = 'Jokers/Jokers.png', px = 71, py = 95})
 SMODS.Atlas({key = 'bunco_jokers_exotic', path = 'Jokers/JokersExotic.png', px = 71, py = 95})
 SMODS.Atlas({key = 'bunco_jokers_legendary', path = 'Jokers/JokersLegendary.png', px = 71, py = 95})
+SMODS.Atlas({key = 'bunco_jokers_the_joker', path = 'Jokers/JokerBlind.png', px = 71, py = 95})
 
 local function create_joker(joker)
 
@@ -555,14 +556,16 @@ local function create_joker(joker)
 
     -- Sprite atlas
 
+    local atlas
+
     if joker.type == nil then
-        joker.atlas = 'bunco_jokers'
+        atlas = 'bunco_jokers'
     elseif joker.type == 'Exotic' then
-        joker.atlas = 'bunco_jokers_exotic'
+        atlas = 'bunco_jokers_exotic'
     end
 
     if joker.rarity == 'Legendary' then
-        joker.atlas = 'bunco_jokers_legendary'
+        atlas = 'bunco_jokers_legendary'
     end
 
     -- Key generation from name
@@ -607,7 +610,7 @@ local function create_joker(joker)
         name = joker.name,
         key = key,
 
-        atlas = joker.atlas,
+        atlas = joker.custom_atlas or atlas,
         pos = joker.position,
         soul_pos = joker.soul,
 
@@ -2691,6 +2694,83 @@ create_joker({ -- Mousetrap
                     chip_mod = card.ability.extra.chips,
                 }
             end
+        end
+    end
+})
+
+create_joker({ -- The Joker
+    name = 'The Joker', custom_atlas = 'bunco_jokers_the_joker', position = 1,
+    vars = {{trash_list = {}}, {odds = 3}},
+    custom_vars = function(self, info_queue, card)
+        local vars
+        if G.GAME and G.GAME.probabilities.normal then
+            vars = {G.GAME.probabilities.normal, card.ability.extra.odds}
+        else
+            vars = {1, card.ability.extra.odds}
+        end
+        return {vars = vars}
+    end,
+    rarity = 'Rare', cost = 6,
+    blueprint = false, eternal = true,
+    unlocked = false,
+    check_for_unlock = function(self, args)
+        if args.type == 'discover_amount' then
+            if G.DISCOVER_TALLIES.blinds.tally == G.DISCOVER_TALLIES.blinds.of then
+                unlock_card(self)
+            end
+        end
+    end,
+    calculate = function(self, card, context)
+        if not context.blueprint then
+            if context.scoring_hand and not context.other_card then
+                card.ability.extra.trash_list = {}
+                for k, v in ipairs(context.scoring_hand) do
+                    if v.config.center == G.P_CENTERS.c_base then
+                        if pseudorandom('the_joker'..G.SEED) < G.GAME.probabilities.normal / card.ability.extra.odds then
+                            table.insert(card.ability.extra.trash_list, v)
+                        end
+                    end
+                end
+            end
+
+            if context.after then
+                local trash_list = card.ability.extra.trash_list
+                local dissolve_time_fac = 3
+
+                if #trash_list ~= 0 then
+
+                    event({
+                        trigger = 'before',
+                        delay = 0.7 * dissolve_time_fac * 1.051,
+                        func = function()
+                            big_juice(card)
+                            play_sound('tarot2', 1.2, 0.4)
+                            event({blocking = false, blockable = false, trigger = 'after', delay = 0.06*G.SETTINGS.GAMESPEED, func = function()
+                                play_sound('tarot2', 0.96, 0.4)
+                            return true end})
+                            for _, card_to_trash in ipairs(trash_list) do
+                                if not card_to_trash.removed then
+                                    card_to_trash:start_dissolve(nil, nil, dissolve_time_fac)
+                                end
+                            end
+                            return true
+                        end
+                    })
+
+                    for _, card_to_trash in ipairs(trash_list) do
+                        card_to_trash.destroyed = true
+                    end
+                end
+                card.ability.extra.trash_list = {}
+            end
+        end
+    end,
+    update = function(self, card)
+        if self.unlocked and self.discovered then
+            local timer = (G.TIMERS.REAL * G.ANIMATION_FPS * 2) + 20
+            local frame_amount = 40
+            local wrapped_value = (math.floor(timer) - 1) % frame_amount + 1
+            card.children.center:set_sprite_pos({x = wrapped_value, y = card.children.center.sprite_pos.y})
         end
     end
 })
@@ -4842,55 +4922,23 @@ SMODS.Voucher{ -- Shell Game
 
 function Card:create_blind_card()
 
+    if pseudorandom('the_joker'..G.SEED) < 0.04 and G.P_CENTERS['j_bunc_the_joker'].unlocked and not (G.GAME.used_jokers['j_bunc_the_joker'] and not next(find_joker("Showman"))) then
+        return create_card('Joker', G.pack_cards, nil, nil, true, true, 'j_bunc_the_joker', 'buf')
+    end
+
     self = Card(self.T.x, self.T.y, 0.8*G.CARD_W, 0.8*G.CARD_W, nil, G.P_CENTERS.c_base)
 
     -- Blind acquiring like in the base game
 
-    local eligible_bosses = {}
-    for k, v in pairs(G.P_BLINDS) do
-        if not v.boss then
+    local boss
 
-        elseif v.in_pool and type(v.in_pool) == 'function' then
-            if
-                (
-                    ((G.GAME.round_resets.ante)%G.GAME.win_ante == 0 and G.GAME.round_resets.ante >= 2) ==
-                    (v.boss.showdown or false)
-                ) or
-                v.ignore_showdown_check
-            then
-                eligible_bosses[k] = v:in_pool() and true or nil
-            end
-        elseif not v.boss.showdown and (v.boss.min <= math.max(1, G.GAME.round_resets.ante) and ((math.max(1, G.GAME.round_resets.ante))%G.GAME.win_ante ~= 0 or G.GAME.round_resets.ante < 2)) then
-            eligible_bosses[k] = true
-        elseif v.boss.showdown and (G.GAME.round_resets.ante)%G.GAME.win_ante == 0 and G.GAME.round_resets.ante >= 2 then
-            eligible_bosses[k] = true
-        end
-    end
-    for k, v in pairs(G.GAME.banned_keys) do
-        if eligible_bosses[k] then eligible_bosses[k] = nil end
+    if not TW_BL then -- TW_BL is for Twich Blinds mod
+        boss = get_new_boss()
+    else
+        boss = TW_BL.UTILITIES.get_new_bosses(0, 1)[1]
     end
 
-    local min_use = 100
-    for k, v in pairs(G.GAME.bosses_used) do
-        if eligible_bosses[k] then
-            eligible_bosses[k] = v
-            if eligible_bosses[k] <= min_use then 
-                min_use = eligible_bosses[k]
-            end
-        end
-    end
-    for k, v in pairs(eligible_bosses) do
-        if eligible_bosses[k] then
-            if eligible_bosses[k] > min_use then 
-                eligible_bosses[k] = nil
-            end
-        end
-    end
-    local _, blind = pseudorandom_element(eligible_bosses, pseudoseed('boss'))
-
-    -- Key to actual blind object
-
-    blind = G.P_BLINDS[blind]
+    local blind = G.P_BLINDS[boss]
 
     -- Blind appearance
 
@@ -4916,7 +4964,7 @@ function Card:create_blind_card()
                     self.hover_tilt = 3
                     self:juice_up(0.05, 0.02)
                 play_sound('chips1', math.random() * 0.1 + 0.55, 0.12)
-                self.config.h_popup = create_UIBox_blind_popup(blind, true)
+                self.config.h_popup = create_UIBox_blind_popup(self.ability.blind_card.blind, true)
                 self.config.h_popup_config = {align = 'tm', offset = {x = 0, y = -0.13}, parent = self}
                 Node.hover(self)
                 if self.children.alert then 
