@@ -13,9 +13,9 @@
 -- (?) Debuff registration plate level with shader if possible
 -- (done) Nan morgan or make zero shapiro count letter rank cards
 -- (done/WIP) Unlocks
--- Check whats up with joker knight
+-- (done) Check whats up with joker knight
 -- (done) Add purist config
--- (skip: waiting for steamodded) Card sizes
+-- (done) Card sizes
 -- (done) Magenta dagger wobble?
 -- (?) Disable Bierdeckel upgrade message on win
 -- (done) Global variable for glitter
@@ -40,6 +40,7 @@
 -- (done) Check blind flips beforehand (The Umbrella)
 -- (done) Running joke gives negative while the joker in shop
 -- Make configs apply immediately
+-- (done) Add unlock to the Shell Game
 
 global_bunco = global_bunco or {loc = {}, vars = {}}
 local bunco = SMODS.current_mod
@@ -650,6 +651,8 @@ local function create_joker(joker)
         remove_from_deck = joker.remove,
         add_to_deck = joker.add,
         set_ability = joker.set_ability,
+        set_sprites = joker.set_sprites,
+        load = joker.load,
         in_pool = joker.custom_in_pool or pool,
 
         effect = joker.effect
@@ -1211,6 +1214,19 @@ create_joker({ -- Knight
                 }
             end
         end
+    end,
+    set_ability = function(self, card, initial, delay_sprites)
+        if self.discovered or card.bypass_discovery_center then
+            card.T.h = card.T.w
+        end
+    end,
+    set_sprites = function(self, card, front)
+        if self.discovered or card.bypass_discovery_center then
+            card.children.center.scale.y = card.children.center.scale.x
+        end
+    end,
+    load = function(self, card, card_table, other_card)
+        return self.set_ability(self, card)
     end
 })
 
@@ -1424,6 +1440,19 @@ create_joker({ -- Doorhanger
             unlock_card(self)
         end
     end,
+    set_ability = function(self, card, initial, delay_sprites)
+        if self.discovered or card.bypass_discovery_center then
+            card.T.w = card.T.w / 1.44
+        end
+    end,
+    set_sprites = function(self, card, front)
+        if self.discovered or card.bypass_discovery_center then
+            card.children.center.scale.x = card.children.center.scale.x / 1.44
+        end
+    end,
+    load = function(self, card, card_table, other_card)
+        return self.set_ability(self, card)
+    end
 })
 
 create_joker({ -- Fingerprints
@@ -1539,6 +1568,19 @@ create_joker({ -- Bierdeckel
             -- maybe juice all held cards, that'd be fun
             forced_message(localize('k_upgrade_ex'), context.blueprint_card or card, G.C.CHIPS, true)
         end
+    end,
+    set_ability = function(self, card, initial, delay_sprites)
+        if self.discovered or card.bypass_discovery_center then
+            card.T.h = card.T.w
+        end
+    end,
+    set_sprites = function(self, card, front)
+        if self.discovered or card.bypass_discovery_center then
+            card.children.center.scale.y = card.children.center.scale.x
+        end
+    end,
+    load = function(self, card, card_table, other_card)
+        return self.set_ability(self, card)
     end
 })
 
@@ -2612,6 +2654,19 @@ create_joker({ -- Cellphone
             card.ability.extra.active = false
             forced_message(loc.dictionary.declined, card, G.C.RED, true)
         end
+    end,
+    set_ability = function(self, card, initial, delay_sprites)
+        if self.discovered or card.bypass_discovery_center then
+            card.T.w = card.T.w / 1.11
+        end
+    end,
+    set_sprites = function(self, card, front)
+        if self.discovered or card.bypass_discovery_center then
+            card.children.center.scale.x = card.children.center.scale.x / 1.11
+        end
+    end,
+    load = function(self, card, card_table, other_card)
+        return self.set_ability(self, card)
     end
 })
 
@@ -2765,8 +2820,21 @@ create_joker({ -- The Joker
             end
         end
     end,
+    set_ability = function(self, card, initial, delay_sprites)
+        if self.discovered or card.bypass_discovery_center then
+            card.T.h = card.T.w
+        end
+    end,
+    set_sprites = function(self, card, front)
+        if self.discovered or card.bypass_discovery_center then
+            card.children.center.scale.y = card.children.center.scale.x
+        end
+    end,
+    load = function(self, card, card_table, other_card)
+        return self.set_ability(self, card)
+    end,
     update = function(self, card)
-        if self.unlocked and self.discovered then
+        if self.discovered or card.bypass_discovery_center then
             local timer = (G.TIMERS.REAL * G.ANIMATION_FPS * 2) + 20
             local frame_amount = 40
             local wrapped_value = (math.floor(timer) - 1) % frame_amount + 1
@@ -4912,7 +4980,13 @@ SMODS.Voucher{ -- Shell Game
 
     requires = {'v_bunc_cups_n_balls'},
 
-    unlocked = true,
+    unlocked = false,
+
+    check_for_unlock = function(self, args)
+        if args.type == 'open_pack' and args.packs_total >= 25 then
+            unlock_card(self)
+        end
+    end,
 
     pos = coordinate(6),
     atlas = 'bunco_vouchers'
