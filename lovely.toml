@@ -190,6 +190,7 @@ for index, card in ipairs(G.FORCEFIELD_CARDS) do
     and card
     and not card.removed
     and card.states.visible
+    and not card.dissolve
     and index <= 5 then
 
         local w, h = love.graphics.getWidth(), love.graphics.getHeight() -- Get the size
@@ -524,7 +525,7 @@ payload = '''
 local grouped, grouped_area_cards
 if self.ability.group then
     grouped = self
-    grouped_area_cards = self.area and self.area.cards or nil
+    grouped_area_cards = self.area and self.area.config.type ~= 'title' and self.area.cards or nil
 end
 
 '''
@@ -538,38 +539,36 @@ position = 'after'
 match_indent = true
 payload = '''
 
-G.E_MANAGER:add_event(Event({blocking = false, trigger = 'after', func = function()
-    if grouped and grouped_area_cards and #grouped_area_cards > 0 then
+if grouped and grouped_area_cards and #grouped_area_cards > 0 then
 
-        local next_card
-        local destroyed_cards = {}
-        for i=1, #grouped_area_cards do
-            if grouped_area_cards[i].ability.group and grouped_area_cards[i].ability.group then
-                if grouped_area_cards[i].ability.group.id == grouped.ability.group.id then
-                    table.insert(destroyed_cards, grouped_area_cards[i])
-                end
-            end
-        end
-
-        next_card = destroyed_cards[1]
-
-        if next_card then
-            if next_card.ability.name == 'Glass Card' then
-                next_card:shatter()
-            else
-                next_card:start_dissolve()
-            end
-
-            for i = 1, #G.jokers.cards do
-                eval_card(G.jokers.cards[i], {
-                    cardarea = G.jokers,
-                    remove_playing_cards = true,
-                    removed = {next_card}
-                })
+    local next_card
+    local destroyed_cards = {}
+    for i=1, #grouped_area_cards do
+        if grouped_area_cards[i].ability.group and grouped_area_cards[i].ability.group then
+            if grouped_area_cards[i].ability.group.id == grouped.ability.group.id then
+                table.insert(destroyed_cards, grouped_area_cards[i])
             end
         end
     end
-return true end}))
+
+    next_card = destroyed_cards[1]
+
+    if next_card then
+        if next_card.ability.name == 'Glass Card' then
+            next_card:shatter()
+        else
+            next_card:start_dissolve()
+        end
+
+        for i = 1, #G.jokers.cards do
+            eval_card(G.jokers.cards[i], {
+                cardarea = G.jokers,
+                remove_playing_cards = true,
+                removed = {next_card}
+            })
+        end
+    end
+end
 
 '''
 
@@ -621,6 +620,9 @@ if (_c.set == 'Default' or _c.set == 'Enhanced') and card and card.ability and t
             if k == 1 then play_sound('paper1', 0.95 + math.random() * 0.1, 0.3) end
             ease_value(group_card.T, 'scale', 0.25, nil, 'REAL', true, 0.2)
             cardarea:emplace(group_card)
+            if v.facing == 'back' then
+                group_card.sprite_facing = 'back'
+            end
         end
         table.insert(main_end, {n=G.UIT.R, config = {align = "cm", colour = G.C.CLEAR, r = 0.0}, nodes={
             {n=G.UIT.C, config = {align = "cm"}, nodes={
@@ -673,7 +675,7 @@ if #G.hand.highlighted <= (G.GAME.blind and G.GAME.blind.name == 'cry-Sapphire S
 [[patches]]
 [patches.pattern]
 target = 'card.lua'
-pattern = '''if self.greyed then'''
+pattern = '''add_to_drawhash(self)'''
 position = 'before'
 match_indent = true
 payload = '''
@@ -3399,7 +3401,8 @@ local crackers_in_hand = false
 
 for i = 1, #G.hand.cards do
     if G.hand.cards[i] and G.hand.cards[i].highlighted
-    and G.hand.cards[i].config.center == G.P_CENTERS.m_bunc_cracker then
+    and G.hand.cards[i].config.center == G.P_CENTERS.m_bunc_cracker
+    and not G.hand.cards[i].debuff then
         crackers_in_hand = true
         break
     end
@@ -3407,7 +3410,7 @@ end
 
 for i = 1, #G.hand.cards do
     if G.hand.cards[i] and G.hand.cards[i].highlighted
-    and ((G.hand.cards[i].config.center == G.P_CENTERS.m_bunc_cracker) or (crackers_in_hand and #SMODS.find_card('j_bunc_pica', false) > 0)) then
+    and (((G.hand.cards[i].config.center == G.P_CENTERS.m_bunc_cracker) and not G.hand.cards[i].debuff) or (crackers_in_hand and #SMODS.find_card('j_bunc_pica', false) > 0)) then
         table.insert(G.hand.crackers_highlighted, G.hand.cards[i])
         G.hand:remove_from_highlighted(G.hand.cards[i], true)
     end
