@@ -34,6 +34,8 @@ return {
 
             -- Miscellaneous
 
+            bunc_a_side = 'A Side',
+            bunc_b_side = 'B Side',
             bunc_copied = 'Copied!',
             bunc_nothing = 'Nothing',
             bunc_chips = 'Chips',
@@ -126,6 +128,32 @@ return {
             bunc_temporary_extra_chips = {['text'] = {[1] = '{C:chips}+#1#{} extra chips this round'}},
             bunc_linked_cards = {['text'] = {[1] = '{C:attention}Linked{} in this group:'}},
             bunc_drawn_linked_cards = {['text'] = {[1] = '{C:attention}Linked{} in drawn group'}},
+            bunc_light_suits = {
+                ['name'] = 'Light suits',
+                ['text'] = {
+                    [1] = '{C:hearts}Hearts{} and {C:diamonds}Diamonds'
+                }
+            },
+            bunc_light_suits_exotic = {
+                ['name'] = 'Light suits',
+                ['text'] = {
+                    [1] = '{C:hearts}Hearts{}, {C:diamonds}Diamonds,',
+                    [2] = 'and {C:bunc_fleurons}Fleurons'
+                }
+            },
+            bunc_dark_suits = {
+                ['name'] = 'Dark suits',
+                ['text'] = {
+                    [1] = '{C:spades}Spades{} and {C:clubs}Clubs'
+                }
+            },
+            bunc_dark_suits_exotic = {
+                ['name'] = 'Dark suits',
+                ['text'] = {
+                    [1] = '{C:spades}Spades{}, {C:clubs}Clubs,',
+                    [2] = 'and {C:bunc_halberds}Halberds'
+                }
+            },
             bunc_exotic_cards = {
                 ['name'] = 'Exotic cards',
                 ['text'] = {
@@ -428,16 +456,23 @@ return {
 
             -- Main Jokers
 
-            j_bunc_cassette = {
-                ['name'] = 'Cassette',
+            j_bunc_cassette_a = {
+                ['name'] = 'Cassette (A Side)',
                 ['text'] = {
-                    [1] = 'On discard, flip Joker to the other side',
-                    [2] = '{C:attention}A side:{} Cards with light suit',
-                    [3] = 'give {C:chips}+#1#{} Chips when scored',
-                    [4] = '{C:attention}B side:{} Cards with dark suit',
-                    [5] = 'give {C:mult}+#2#{} Mult when scored'
-                    -- TODO would be good to have a line for the side
-                    -- or colorize the active side
+                    [1] = 'Cards with {C:attention}light suit',
+                    [2] = 'give {C:chips}+#1#{} Chips when scored'
+                }
+            },
+            j_bunc_cassette_b = {
+                ['name'] = 'Cassette (B Side)',
+                ['text'] = {
+                    [1] = 'Cards with {C:attention}dark suit',
+                    [2] = 'give {C:mult}+#2#{} Mult when scored'
+                }
+            },
+            j_bunc_cassette_extra = {
+                ['text'] = {
+                    [1] = '{C:inactive}On discard, flip this Joker'
                 }
             },
             j_bunc_mosaic = {
@@ -692,16 +727,17 @@ return {
             j_bunc_nil_bill = {
                 ['name'] = 'Nil Bill',
                 ['text'] = {
-                    [1] = '{C:attention}Debuffed{} cards earn',
-                    [2] = '{C:money}$#1#{} when scored'
+                    [1] = 'Earn {C:money}$#1#{}',
+                    [2] = 'when a playing card',
+                    [3] = 'is destroyed'
                 }
             },
             j_bunc_bierdeckel = {
                 ['name'] = 'Bierdeckel',
                 ['text'] = {
-                    [1] = 'Cards in hand gain',
-                    [2] = '{C:chips}+#1#{} Chips this round',
-                    [3] = 'after play or discard'
+                    [1] = 'After play or discard,',
+                    [2] = 'cards held in hand gain',
+                    [3] = '{C:chips}+#1#{} Chips until end of round'
                 }
             },
             j_bunc_registration_plate = {
@@ -909,8 +945,8 @@ return {
             j_bunc_doodle = {
                 ['name'] = 'Doodle',
                 ['text'] = {
-                    [1] = '{C:attention}Copy{} first consumable',
-                    [2] = 'used this round',
+                    [1] = '{C:attention}Copy{} first {C:tarot}Tarot{} or {C:planet}Planet{}',
+                    [2] = 'card used this round',
                     [3] = '{C:inactive}(Must have room)'
                 },
                 ['unlock'] = {
@@ -1030,8 +1066,8 @@ return {
                 ['name'] = 'Glue Gun',
                 ['text'] = {
                     [1] = 'Sell this card to',
-                    [2] = '{C:attention}link together{} #1# selected',
-                    [3] = 'playing cards'
+                    [2] = '{C:attention}link together{} up to #1#',
+                    [3] = 'selected playing cards'
                 }
             },
             j_bunc_taped = {
@@ -1192,11 +1228,10 @@ return {
             j_bunc_starfruit = {
                 ['name'] = 'Starfruit',
                 ['text'] = {
-                    [1] = '{C:green}#1# in #2#{} chance to level up played',
-                    [2] = '{C:attention}poker hand{} if it contains a {C:attention}Spectrum',
-                    [3] = '{C:green}#1# in #3#{} chance to destroy this Joker at end of round',
-                    [4] = 'if a {C:attention}Spectrum{}-containing hand was played this round'
-                    -- TODO this joker is way too long
+                    [1] = 'Level up played poker hand',
+                    [2] = 'if it contains a {C:attention}Spectrum',
+                    [3] = '{C:green}#1# in #2#{} chance this card is',
+                    [4] = 'destroyed at the end of round'
                 }
             },
             j_bunc_fondue = {
