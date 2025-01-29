@@ -1277,6 +1277,7 @@ create_joker({ -- Dread
                 for _, card_to_trash in ipairs(trash_list) do
                     card_to_trash.destroyed = true
                 end
+                SMODS.calculate_context({remove_playing_cards = true, removed = trash_list})
                 card.ability.extra.trash_list = {}
             end
         end
@@ -1810,51 +1811,43 @@ create_joker({ -- Fingerprints
     end
 })
 
---[[ create_joker({ -- Zero Shapiro
+create_joker({ -- Zero Shapiro
     name = 'Zero Shapiro', position = 23,
-    vars = {{bonus = 0.3}, {amount = 1}},
+    vars = {{odds = 8}},
+    custom_vars = function(self, info_queue, card)
+        local vars
+
+        info_queue[#info_queue+1] = {set = 'Tag', key = 'tag_d_six'}
+
+        if G.GAME and G.GAME.probabilities.normal then
+            vars = {G.GAME.probabilities.normal, card.ability.extra.odds}
+        else
+            vars = {1, card.ability.extra.odds}
+        end
+        return {vars = vars}
+    end,
     rarity = 'Uncommon', cost = 4,
-    blueprint = false, eternal = true, perishable = false,
+    blueprint = true, eternal = true,
     unlocked = true,
     calculate = function(self, card, context)
         if context.individual and context.cardarea == G.play then
             if context.other_card.config.center.key == 'm_stone' or context.other_card:get_id() == 0 or not tonumber(context.other_card.base.value) and context.other_card.base.value ~= 'Ace' then
-
-                local old_amount = card.ability.extra.amount
-                card.ability.extra.amount = card.ability.extra.amount + card.ability.extra.bonus
-
-                for k, v in pairs(G.GAME.probabilities) do
-                    G.GAME.probabilities[k] = G.GAME.probabilities[k] / old_amount * card.ability.extra.amount
+                if pseudorandom('zero_shapiro'..G.SEED) < G.GAME.probabilities.normal / card.ability.extra.odds then
+                    return {
+                        extra = {message = '+'..localize{type = 'name_text', key = 'tag_d_six', set = 'Tag'}, colour = G.C.GREEN},
+                        card = card,
+                        func = function()
+                            event({func = function()
+                                add_tag(Tag('tag_d_six'))
+                                return true
+                            end})
+                        end
+                    }
                 end
-
-                return {
-                    extra = {message = '+X'..card.ability.extra.bonus..' '..G.localization.misc.dictionary.bunc_chance, colour = G.C.GREEN},
-                    card = card
-                }
             end
-        end
-
-        if context.end_of_round and not context.other_card then
-            if card.ability.extra.amount ~= 1 then
-                for k, v in pairs(G.GAME.probabilities) do
-                    G.GAME.probabilities[k] = v / card.ability.extra.amount
-                end
-
-                card.ability.extra.amount = 1
-
-                forced_message(localize('k_reset'), card, G.C.GREEN, true)
-            end
-        end
-
-        if context.selling_self then
-            for k, v in pairs(G.GAME.probabilities) do
-                G.GAME.probabilities[k] = v / card.ability.extra.amount
-            end
-
-            card.ability.extra.amount = 1
         end
     end
-}) ]]
+})
 
 create_joker({ -- Nil Bill
     name = 'Nil Bill', position = 24,
@@ -2380,7 +2373,7 @@ create_joker({ -- Juggalo
     locked_vars = function(self, info_queue, card)
         return {vars = {self.config.extra.unlock}}
     end,
-    rarity = 'Rare', cost = 8,
+    rarity = 'Rare', cost = 5,
     blueprint = true, eternal = true,
     unlocked = false,
     check_for_unlock = function(self, args)
@@ -2562,6 +2555,18 @@ create_joker({ -- Hopscotch
 
 create_joker({ -- Pawn
     name = 'Pawn', position = 40,
+    custom_vars = function(self, info_queue, card)
+        if G.playing_cards and #G.playing_cards > 0 then
+            local rank = math.huge
+            for _, deck_card in ipairs(G.playing_cards) do
+                if deck_card:get_id() < rank and deck_card.config.center ~= G.P_CENTERS.m_stone then
+                    rank = deck_card:get_id()
+                end
+            end
+            return {vars = {localize(tostring(rank), 'ranks')}}
+        end
+        return {vars = {localize('2', 'ranks')}}
+    end,
     rarity = 'Common', cost = 5,
     blueprint = false, eternal = true,
     unlocked = true,
@@ -2973,7 +2978,7 @@ create_joker({ -- Critic
 create_joker({ -- Cellphone
     name = 'Cellphone', position = 50,
     vars = {{active = true}, {cards_to_hand = {}}},
-    rarity = 'Uncommon', cost = 6,
+    rarity = 'Uncommon', cost = 8,
     blueprint = false, eternal = true,
     unlocked = true,
     calculate = function(self, card, context)
@@ -3113,7 +3118,7 @@ create_joker({ -- The Joker
         end
         return {vars = vars}
     end,
-    rarity = 'Rare', cost = 6,
+    rarity = 'Rare', cost = 10,
     blueprint = false, eternal = true,
     unlocked = false,
     check_for_unlock = function(self, args)
@@ -3220,7 +3225,7 @@ create_joker({ -- Tangram
 
 create_joker({ -- Domino
     name = 'Domino', position = 55,
-    rarity = 'Rare', cost = 5,
+    rarity = 'Rare', cost = 12,
     blueprint = false, eternal = true,
     unlocked = true,
     calculate = function(self, card, context)
@@ -4037,6 +4042,95 @@ SMODS.Consumable{ -- The Art
         info_queue[#info_queue+1] = G.P_CENTERS.m_bunc_copper
         return {vars = {self.config.max_highlighted, localize{type = 'name_text', set = 'Enhanced', key = self.config.mod_conv}}} 
     end
+}
+
+SMODS.Consumable{ -- The Universe
+    set = 'Tarot', atlas = 'bunco_tarots',
+    key = 'universe',
+
+    config = {max_highlighted = 3},
+    pos = coordinate(3),
+
+    set_card_type_badge = function(self, card, badges)
+        badges[1] = create_badge(G.localization.misc.dictionary.bunc_thoth_tarot, get_type_colour(self or card.config, card), nil, 1.2)
+    end,
+
+    loc_vars = function(self, info_queue)
+        return {vars = {self.config.max_highlighted}}
+    end,
+
+    can_use = function(self, card)
+        if G.hand and (#G.hand.highlighted >= 1) and (#G.hand.highlighted <= self.config.max_highlighted) then
+            return true
+        end
+    end,
+
+    use = function(self, card)
+        local i
+        for _, playing_card in ipairs(G.hand.cards) do
+            if playing_card.highlighted then
+
+                local new_seal = SMODS.poll_seal({guaranteed = true, key = 'universe'})
+                local new_enhancement = SMODS.poll_enhancement({guaranteed = true, key = 'universe'})
+                local new_edition = poll_edition('universe', nil, true, true)
+                local new_suit = pseudorandom_element(SMODS.Suits, pseudoseed('universe')).key
+                local new_rank = pseudorandom_element(SMODS.Ranks, pseudoseed('universe')).key
+
+                event({delay = 0.2, trigger = 'before', func = function()
+
+                    i = i and (i + 1) or 1
+                    play_sound('card1', 0.85 + (i * 0.05))
+                    big_juice(playing_card)
+
+                    if playing_card.seal then
+                        playing_card:set_seal(new_seal, true, true)
+                    end
+
+                    if playing_card.config.center ~= G.P_CENTERS.c_base then
+                        playing_card:set_ability(G.P_CENTERS[new_enhancement])
+                    end
+
+                    if playing_card.edition then
+                        playing_card:set_edition(new_edition, true)
+                    end
+
+                    SMODS.change_base(playing_card, new_suit, new_rank)
+
+                return true end})
+            end
+        end
+    end,
+}
+
+SMODS.Consumable{ -- Lust
+    set = 'Tarot', atlas = 'bunco_tarots',
+    key = 'lust',
+
+    config = {bonus = 1, limit = 52},
+    pos = coordinate(4),
+
+    set_card_type_badge = function(self, card, badges)
+        badges[1] = create_badge(G.localization.misc.dictionary.bunc_thoth_tarot, get_type_colour(self or card.config, card), nil, 1.2)
+    end,
+
+    loc_vars = function(self, info_queue)
+        local reward = 0
+        if G.hand and G.hand.cards and (#G.hand.cards > 0) then
+            reward = #G.hand.cards * self.config.bonus
+        end
+        return {vars = {self.config.bonus, self.config.limit, (reward <= self.config.limit) and reward or self.config.limit}}
+    end,
+
+    can_use = function(self, card)
+        if G.hand and G.hand.cards and (#G.hand.cards > 0) then
+            return true
+        end
+    end,
+
+    use = function(self, card)
+        local reward = #G.hand.cards * self.config.bonus
+        ease_dollars((reward <= self.config.limit) and reward or self.config.limit)
+    end,
 }
 
 SMODS.Consumable{ -- The Sky
@@ -5972,6 +6066,8 @@ SMODS.Blind{ -- Chartreuse Crown
     key = 'final_crown',
     boss = {showdown = true, min = 10, max = 10},
 
+    dollars = 8,
+
     recalc_debuff = function(self, card, from_blind)
         if not G.GAME.blind.disabled and card.area ~= G.jokers then
             if card.base.suit == ('Spades') or
@@ -6017,6 +6113,8 @@ SMODS.Blind{ -- Vermilion Trident
     key = 'final_trident',
     boss = {showdown = true, min = 10, max = 10},
 
+    dollars = 8,
+
     defeat = function(self)
         G.GAME.Trident = false
     end,
@@ -6030,6 +6128,8 @@ SMODS.Blind{ -- Vermilion Trident
 SMODS.Blind{ -- Indigo Tower
     key = 'final_tower',
     boss = {showdown = true, min = 10, max = 10},
+
+    dollars = 8,
 
     recalc_debuff = function(self, card, from_blind)
         if not G.GAME.blind.disabled and card.area ~= G.jokers then
@@ -6051,6 +6151,8 @@ SMODS.Blind{ -- Magenta Dagger
     key = 'final_dagger',
     boss = {showdown = true, min = 10, max = 10},
 
+    dollars = 8,
+
     boss_colour = HEX('cb589f'),
 
     pos = {y = 3},
@@ -6060,6 +6162,8 @@ SMODS.Blind{ -- Magenta Dagger
 SMODS.Blind{ -- Turquoise Shield
     key = 'final_shield',
     boss = {showdown = true, min = 10, max = 10},
+
+    dollars = 8,
 
     set_blind = function(self, reset, silent)
         if not reset then
@@ -6925,7 +7029,7 @@ SMODS.Voucher{ -- Masquerade
 
     config = {unlock = 5},
     locked_loc_vars = function(self, info_queue, card)
-        return {vars = {self.config.unlock, G.PROFILES[G.SETTINGS.profile].booster_packs_opened or 0}}
+        return {vars = {self.config.unlock, G.PROFILES[G.SETTINGS.profile].blind_cards_used or 0}}
     end,
 
     requires = {'v_bunc_disguise'},
@@ -7270,9 +7374,12 @@ SMODS.Enhancement({ -- Cracker
 
 function calculate_cracker_cards(context)
     if #SMODS.find_card('j_bunc_hardtack', false) <= 0 then
+        local crackers_total = {}
         for _, cracker_card in ipairs(context.full_hand) do
             if cracker_card.marked_cracker and cracker_card.config.center == G.P_CENTERS.m_bunc_cracker and not cracker_card.debuff then
                 if not cracker_card.destroyed then
+                    table.insert(crackers_total, cracker_card)
+
                     forced_message(localize('k_eaten_ex'), cracker_card)
 
                     local dissolve_time_fac = 2
@@ -7310,6 +7417,9 @@ function calculate_cracker_cards(context)
                     cracker_card.destroyed = true
                 end
             end
+        end
+        if #crackers_total > 0 then
+            SMODS.calculate_context({remove_playing_cards = true, removed = crackers_total})
         end
     end
 end

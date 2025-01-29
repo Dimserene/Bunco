@@ -309,6 +309,24 @@ return {
                     [3] = '{C:attention}#2#s'
                 }
             },
+            c_bunc_universe = {
+                ['name'] = 'The Universe',
+                ['text'] = {
+                    [1] = '{C:attention}Randomizes{} the suit,',
+                    [2] = 'rank, enhancement, edition,',
+                    [3] = 'and seal of up to {C:attention}#1#{}',
+                    [4] = 'selected cards'
+                }
+            },
+            c_bunc_lust = {
+                ['name'] = 'Lust',
+                ['text'] = {
+                    [1] = 'Gives {C:money}$#1#{} per every',
+                    [2] = 'playing card held',
+                    [3] = 'in hand {C:inactive}(Max of {C:money}$#2#{C:inactive})',
+                    [4] = '{C:inactive}(Currently {C:money}$#3#{C:inactive})'
+                }
+            },
             c_bunc_sky = {
                 ['name'] = 'The Sky',
                 ['text'] = {
@@ -708,20 +726,19 @@ return {
             j_bunc_fingerprints = {
                 ['name'] = 'Fingerprints',
                 ['text'] = {
-                    [1] = 'Scored cards in {C:attention}winning hand{}',
-                    [2] = 'gain {C:chips}+#1#{} Chips for',
-                    [3] = 'next round only',
+                    [1] = 'Scored cards',
+                    [2] = 'in {C:attention}winning hand{}',
+                    [3] = 'gain {C:chips}+#1#{} Chips until',
+                    [4] = 'end of the next round',
                 }
             },
             j_bunc_zero_shapiro = {
                 ['name'] = 'Zero Shapiro',
                 ['text'] = {
-                    [1] = 'This Joker gains {C:attention}#1#X{} to',
-                    [2] = '{C:green,E:1,S:1.1}probabilities{} {C:attention}this round{} when a',
-                    [3] = 'card with {C:attention}no{}, {C:attention}zero{}, or {C:attention}non-count{}',
-                    [4] = 'rank scores {C:inactive}(K, Q, J, 0, Rankless)',
-                    [5] = '{C:inactive}(Currently {C:attention}X#2#{C:inactive} to {C:green,E:1,S:1.1}probabilities{C:inactive})'
-                    -- TODO not sure how to word non-countable
+                    [1] = 'Scored {C:attention}Ks{}, {C:attention}Qs{}, {C:attention}Js{},',
+                    [2] = 'or {C:attention}Rankless cards',
+                    [3] = 'have {C:green}#1# in #2#{} chance to',
+                    [4] = 'create a {C:attention}D6 Tag',
                 }
             },
             j_bunc_nil_bill = {
@@ -905,7 +922,8 @@ return {
                 ['text'] = {
                     [1] = 'Cards of the {C:attention}lowest{}',
                     [2] = 'rank in your full deck',
-                    [3] = '{C:attention}increase in rank{} when scored'
+                    [3] = '{C:attention}increase in rank{} when scored',
+                    [4] = '{C:inactive}(Current lowest rank: #1#)'
                     -- TODO "when scored" is only accurate
                     -- if the card's rank changes during scoring
                 }
@@ -1519,6 +1537,13 @@ return {
                     [1] = 'Gives two copies of the',
                     [2] = 'next selected {C:attention}Tag{}',
                     [3] = '{s:0.8,C:attention}Triple Tag{s:0.8} excluded'
+                }
+            },
+            tag_bunc_shopping = {
+                ['name'] = 'Shopping Tag',
+                ['text'] = {
+                    [1] = 'Gives {C:attention}1{} free',
+                    [2] = 'shop {C:green}Reroll'
                 }
             },
 
