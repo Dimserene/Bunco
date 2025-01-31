@@ -12,7 +12,7 @@ return {
         fixed_badges = false; -- Changes how badges on the planets work - "Planet" for every non-hidden planet and "Planet?" for secret poker hand planets
         -- Values: true/false (default: false)
 
-        fixed_sprites = true; -- Fixes some stray pixels and various weirdness
+        fixed_sprites = false; -- Fixes some stray pixels and various weirdness
         -- Values: true/false (default: true)
 
         gameplay_reworks = true; -- Reworks some of the vanilla features
