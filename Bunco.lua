@@ -2391,7 +2391,7 @@ create_joker({ -- Juggalo
         return {}
     end,
     locked_vars = function(self, info_queue, card)
-        return {vars = {self.config.extra.unlock}}
+        return {vars = {self.config.extra.unlock, G.PROFILES[G.SETTINGS.profile].consumables_with_edition_used or 0}}
     end,
     rarity = 'Rare', cost = 5,
     blueprint = true, eternal = true,
@@ -3513,7 +3513,7 @@ create_joker({ -- Games Collector
 
 create_joker({ -- Jumper
     name = 'Jumper', position = 59,
-    vars = {{bonus = 10}, {chips = 0}},
+    vars = {{bonus = 8}, {chips = 0}},
     rarity = 'Common', cost = 5,
     blueprint = true, eternal = true, perishable = false,
     unlocked = true,
