@@ -3067,11 +3067,7 @@ create_joker({ -- Wino
 
 create_joker({ -- Bounty Hunter
     name = 'Bounty Hunter', position = 52,
-    vars = {{bonus = 5}, {unlock = -20}},
-    custom_vars = function(self, info_queue, card)
-        local mult = math.abs(math.min(0, G.GAME.dollars)) * card.ability.extra.bonus
-        return {vars = {card.ability.extra.bonus, mult}}
-    end,
+    vars = {{bonus = 3}, {mult = 0}, {unlock = -20}},
     locked_vars = function(self, info_queue, card)
         return {vars = {self.config.extra.unlock}}
     end,
@@ -3086,19 +3082,21 @@ create_joker({ -- Bounty Hunter
         end
     end,
     calculate = function(self, card, context)
-        if context.joker_main then
-            if G.GAME.dollars < 0 then return {
+        if context.get_money then
+            card.ability.extra.mult = card.ability.extra.mult + card.ability.extra.bonus
+        end
+        if context.joker_main and card.ability.extra.mult ~= 0 then
+            return {
                 message = localize {
                     type = 'variable',
                     key = 'a_mult',
-                    vars = {card.ability.extra.bonus * math.abs(G.GAME.dollars)}
+                    vars = {card.ability.extra.mult}
                 },
-                mult_mod = card.ability.extra.bonus * math.abs(G.GAME.dollars),
+                mult_mod = card.ability.extra.mult,
                 card = card
-            } end
+            }
         end
-    end,
-    custom_in_pool = function () return (G.GAME.dollars < 0) end
+    end
 })
 
 create_joker({ -- Mousetrap
@@ -3450,22 +3448,9 @@ create_joker({ -- Headache
         if context.remove_playing_cards then
             card.ability.extra.destroyed = card.ability.extra.destroyed + #context.removed
             while card.ability.extra.destroyed >= card.ability.extra.amount do
-                if #G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit then
-                    G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
-                    event({trigger = 'before',
-                        delay = 0.0,
-                        func = function()
-                            local polymino = create_card('Polymino', G.consumeables)
-                            polymino:add_to_deck()
-                            G.consumeables:emplace(polymino)
-                            G.GAME.consumeable_buffer = 0
-                    return true end})
-                    forced_message('+1 '..localize('k_polymino'), card, G.C.BUNCO_VIRTUAL)
-                    card.ability.extra.destroyed = card.ability.extra.destroyed - card.ability.extra.amount
-                else
-                    forced_message(localize('k_no_space_ex'), card, G.C.RED)
-                    card.ability.extra.destroyed = card.ability.extra.destroyed - card.ability.extra.amount
-                end
+                add_tag(Tag('tag_bunc_arcade'))
+                forced_message('+1 '..localize{type = 'name_text', key = 'tag_bunc_arcade', set = 'Tag'}, card, G.C.BUNCO_VIRTUAL)
+                card.ability.extra.destroyed = card.ability.extra.destroyed - card.ability.extra.amount
             end
         end
     end

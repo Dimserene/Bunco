@@ -46,6 +46,7 @@ return {
             bunc_pew = 'Pew!',
             bunc_declined = 'Declined...',
             bunc_accepted = 'Accepted!',
+            bunc_robbed = 'Robbed!',
             bunc_ouch = 'OUCH!',
             bunc_repeat = 'Repeat!',
             bunc_thoth_tarot = 'Thoth Tarot',
@@ -1035,9 +1036,11 @@ return {
             j_bunc_bounty_hunter = {
                 ['name'] = 'Bounty Hunter',
                 ['text'] = {
-                    [1] = '{C:mult}+#1#{} Mult for',
-                    [2] = 'each {C:money}$1{} below {C:money}$0',
-                    [3] = '{C:inactive}(Currently {C:mult}+#2#{C:inactive} Mult)'
+                    [1] = 'All sources of money',
+                    [2] = 'give {C:money}1${} less and this Joker',
+                    [3] = 'gains {C:mult}+#1#{} Mult each time',
+                    [4] = 'you earn money',
+                    [5] = '{C:inactive}(Currently {C:mult}+#2#{C:inactive} Mult)'
                 },
                 ['unlock'] = {
                     [1] = 'Have less than {E:1,C:attention}$#1#',
@@ -1109,9 +1112,9 @@ return {
             j_bunc_headache = {
                 ['name'] = 'Headache',
                 ['text'] = {
-                    [1] = 'Create a {C:bunco_virtual_dark}Polymino{} card',
-                    [2] = 'for each {C:attention}#1#{} playing cards',
-                    [3] = 'destroyed {C:inactive}(Must have room)',
+                    [1] = 'Create an {C:bunco_virtual_dark}Arcade Tag',
+                    [2] = 'for each {C:attention}#1#{} playing',
+                    [3] = 'cards destroyed',
                     [4] = '{C:inactive}({C:attention}#2#{C:inactive}/#1# cards destroyed)'
                 }
             },
