@@ -243,8 +243,8 @@ return {
                 ['name'] = 'Scattering',
                 ['text'] = {
                     [1] = 'Destroys random',
-                    [2] = 'Joker when sold',
-                    [3] = 'or destroyed'
+                    [2] = 'adjacent Joker',
+                    [3] = 'when removed'
                 }
             },
             bunc_hindered = {
@@ -824,9 +824,8 @@ return {
             j_bunc_hierarchy_of_needs = {
                 ['name'] = 'Hierarchy of Needs',
                 ['text'] = {
-                    [1] = '{C:mult}+#1#{} Mult per',
-                    -- TODO do wilds count, or base suit only?
-                    [2] = '{C:attention}2-Ace{} of the same suit',
+                    [1] = '{C:mult}+#1#{} Mult per {C:attention}2 to Ace',
+                    [2] = 'sequence of the same suit',
                     [3] = 'in your {C:attention}full deck',
                     [4] = '{C:inactive}(Currently {C:mult}+#2#{C:inactive} Mult)'
                 }
@@ -1451,7 +1450,8 @@ return {
             bl_bunc_final_trident = {
                 ['name'] = 'Vermilion Trident',
                 ['text'] = {
-                    [1] = 'No shops this Ante'
+                    [1] = '+1X Base score for',
+                    [2] = 'every purchase this Ante'
                 }
             },
             bl_bunc_final_tower = {
@@ -1820,21 +1820,24 @@ return {
                 ['name'] = 'Cyan Stake',
                 ['text'] = {
                     [1] = 'Shop can have {C:attention}Scattering{} Jokers',
-                    [2] = '{C:inactive,s:0.8}(Destroys random Joker when sold or destroyed)'
+                    [2] = '{C:inactive,s:0.8}(Destroys random adjacent Joker when removed)',
+                    [3] = '{s:0.8}Applies all previous Stakes'
                 }
             },
             stake_bunc_pink = {
                 ['name'] = 'Pink Stake',
                 ['text'] = {
                     [1] = 'Shop can have {C:attention}Hindered{} Jokers',
-                    [2] = '{C:inactive,s:0.8}(Stays in place until the end of the round after being sold)'
+                    [2] = '{C:inactive,s:0.8}(Stays in place until the end of the round after being sold)',
+                    [3] = '{s:0.8}Applies all previous Stakes'
                 }
             },
             stake_bunc_magenta = {
                 ['name'] = 'Magenta Stake',
                 ['text'] = {
                     [1] = 'Shop can have {C:attention}Reactive{} Jokers',
-                    [2] = '{C:inactive,s:0.8}(Debuffed if no blinds are skipped this Ante)'
+                    [2] = '{C:inactive,s:0.8}(Debuffed if no blinds are skipped this Ante)',
+                    [3] = '{s:0.8}Applies all previous Stakes'
                 }
             }
         }
