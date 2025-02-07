@@ -1302,8 +1302,8 @@ return {
             bl_bunc_paling = {
                 ['name'] = 'The Paling',
                 ['text'] = {
-                    [1] = 'Playing or Discarding costs',
-                    [2] = 'both hand and discard'
+                    [1] = 'Lose $1 per',
+                    [2] = 'card discarded'
                 }
             },
             bl_bunc_umbrella = {
@@ -1406,7 +1406,8 @@ return {
             bl_bunc_cadaver = {
                 ['name'] = 'The Cadaver',
                 ['text'] = {
-                    [1] = 'Must not play face cards'
+                    [1] = 'Hand must contain',
+                    [2] = 'a face card'
                 }
             },
             bl_bunc_wind = {

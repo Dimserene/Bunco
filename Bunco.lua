@@ -5884,8 +5884,8 @@ SMODS.Blind{ -- The Sand
         G.GAME.blind.chip_text = number_format(G.GAME.blind.chips)
     end,
 
-    in_pool = function()
-        if G.GAME.round_resets.ante < 4 or (G.HUD_tags and #G.HUD_tags < 2) then
+    in_pool = function(self)
+        if (G.GAME.round_resets.ante < self.boss.min) or (G.HUD_tags and #G.HUD_tags < 2) then
             return false
         else
             return true
@@ -5944,13 +5944,28 @@ SMODS.Blind{ -- The Cadaver
 
     debuff_hand = function(self, cards, hand, handname, check)
         if not G.GAME.blind.disabled then
+            local condition = true
             for i = 1, #cards do
                 if cards[i]:is_face() and (cards[i].facing == 'front' or not check) then
-                    return true
+                    condition = false
+                    break
                 end
             end
-            return false
+            return condition
         end
+    end,
+
+    in_pool = function(self)
+        local face_card = false
+        if G.playing_cards then
+            for _, card in pairs(G.playing_cards) do
+                if card:is_face() then
+                    face_card = true
+                    break
+                end
+            end
+        end
+        return (G.GAME.round_resets.ante >= self.boss.min) and face_card or false
     end,
 
     boss_colour = HEX('a132d5'),
@@ -6019,8 +6034,8 @@ SMODS.Blind{ -- The Depths
         end
     end,
 
-    in_pool = function()
-        if G.GAME.round_resets.ante < 3 or get_deck_win_stake() < 7 then
+    in_pool = function(self)
+        if (G.GAME.round_resets.ante < self.boss.min) or get_deck_win_stake() < 7 then
             return false
         else
             return true
@@ -6049,8 +6064,8 @@ SMODS.Blind{ -- The Chasm
         end
     end,
 
-    in_pool = function()
-        if G.GAME.round_resets.ante < 3 or get_deck_win_stake() < 10 then
+    in_pool = function(self)
+        if (G.GAME.round_resets.ante < self.boss.min) or get_deck_win_stake() < 10 then
             return false
         else
             return true
