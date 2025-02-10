@@ -556,6 +556,40 @@ if config.gameplay_reworks then
             end
         end
     })
+
+    -- Glitter-related
+
+    SMODS.Consumable:take_ownership('wheel_of_fortune', {
+        loc_vars = function(self, info_queue)
+
+            info_queue[#info_queue+1] = G.P_CENTERS.e_foil
+            info_queue[#info_queue+1] = G.P_CENTERS.e_holo
+            info_queue[#info_queue+1] = G.P_CENTERS.e_polychrome
+            info_queue[#info_queue+1] = G.P_CENTERS.e_bunc_glitter
+
+            local vars
+            if G.GAME and G.GAME.probabilities.normal then
+                vars = {G.GAME.probabilities.normal, self.config.extra}
+            else
+                vars = {1, self.config.extra}
+            end
+            return {key = 'c_bunc_wheel_of_fortune', vars = vars}
+        end,
+        pos = config.fixed_sprites and coordinate(4) or nil,
+        atlas = config.fixed_sprites and 'bunco_resprites_consumables' or nil
+    })
+
+    SMODS.Consumable:take_ownership('aura', {
+        loc_vars = function(self, info_queue)
+
+            info_queue[#info_queue+1] = G.P_CENTERS.e_foil
+            info_queue[#info_queue+1] = G.P_CENTERS.e_holo
+            info_queue[#info_queue+1] = G.P_CENTERS.e_polychrome
+            info_queue[#info_queue+1] = G.P_CENTERS.e_bunc_glitter
+
+            return {key = 'c_bunc_aura'}
+        end
+    })
 end
 
 -- Temporary extra chips
@@ -1460,7 +1494,7 @@ create_joker({ -- Shepherd
     blueprint = true, eternal = true, perishable = false,
     unlocked = true,
     calculate = function(self, card, context)
-        if context.after and context.poker_hands ~= nil and next(context.poker_hands['Pair']) and not context.blueprint then
+        if context.before and context.poker_hands ~= nil and next(context.poker_hands['Pair']) and not context.blueprint then
             card.ability.extra.chips = card.ability.extra.chips + card.ability.extra.bonus
 
             forced_message('+'..tostring(card.ability.extra.chips)..' '..G.localization.misc.dictionary.bunc_chips, card, G.C.BLUE, true)
@@ -1746,6 +1780,7 @@ create_joker({ -- Sledgehammer
         for _, deck_card in pairs(G.playing_cards) do
             if deck_card.config.center == G.P_CENTERS.m_glass then
                 deck_card.ability.Xmult = deck_card.ability.Xmult + card.ability.extra.plus_xmult
+                deck_card.ability.x_mult = deck_card.ability.x_mult + card.ability.extra.plus_xmult
             end
         end
         if #SMODS.find_card('j_bunc_sledgehammer') == 0 then
@@ -1763,6 +1798,7 @@ create_joker({ -- Sledgehammer
         for _, deck_card in pairs(G.playing_cards) do
             if deck_card.config.center == G.P_CENTERS.m_glass then
                 deck_card.ability.Xmult = deck_card.ability.Xmult - card.ability.extra.plus_xmult
+                deck_card.ability.x_mult = deck_card.ability.x_mult - card.ability.extra.plus_xmult
             end
         end
         if #SMODS.find_card('j_bunc_sledgehammer') == 0 then
@@ -2643,6 +2679,7 @@ create_joker({ -- Puzzle Board
         info_queue[#info_queue+1] = G.P_CENTERS.e_foil
         info_queue[#info_queue+1] = G.P_CENTERS.e_holo
         info_queue[#info_queue+1] = G.P_CENTERS.e_polychrome
+        info_queue[#info_queue+1] = G.P_CENTERS.e_bunc_glitter
 
         local vars
         if G.GAME and G.GAME.probabilities.normal then
@@ -4498,6 +4535,13 @@ function CardArea:add_to_highlighted(card, silent)
                 if i ~= #group then
                     self.highlighted[#self.highlighted+1] = group[i]
                     group[i].highlighted = true
+
+                    -- The Gate fix
+
+                    if G.GAME.blind and G.GAME.blind.name == 'bl_bunc_gate' and not G.GAME.blind.disabled and self == G.hand then
+                        group[i].ability.forced_selection = true
+                    end
+
                 else
                     original_add_to_highlighted(self, group[i], (silent == nil) and false or silent)
                 end
@@ -5573,7 +5617,7 @@ SMODS.Atlas({key = 'bunco_blinds_finisher', path = 'Blinds/BlindsFinisher.png', 
 
 SMODS.Blind{ -- The Paling
     key = 'paling',
-    boss = {min = 2},
+    boss = {min = 3},
 
     boss_colour = HEX('45d368'),
 

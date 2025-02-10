@@ -294,6 +294,21 @@ return {
         -- Consumables
 
         Tarot = {
+
+            -- Reworked Tarots
+
+            c_bunc_wheel_of_fortune = {
+                ['name'] = 'The Wheel of Fortune',
+                ['text'] = {
+                    [1] = '{C:green}#1# in #2#{} chance to add',
+                    [2] = '{C:dark_edition}Foil{}, {C:dark_edition}Holographic{},',
+                    [3] = '{C:dark_edition}Polychrome{}, or {C:dark_edition}Glitter{} edition',
+                    [4] = 'to a random {C:attention}Joker'
+                }
+            },
+
+            -- Main Tarots
+
             c_bunc_adjustment = {
                 ['name'] = 'Adjustment',
                 ['text'] = {
@@ -360,6 +375,20 @@ return {
             },
         },
         Spectral = {
+
+            -- Reworked Spectrals
+
+            c_bunc_aura = {
+                ['name'] = 'Aura',
+                ['text'] = {
+                    [1] = 'Add {C:dark_edition}Foil{}, {C:dark_edition}Holographic{},',
+                    [2] = '{C:dark_edition}Polychrome{}, or {C:dark_edition}Glitter{} edition',
+                    [3] = 'to {C:attention}1{} selected card in hand'
+                }
+            },
+
+            -- Main Spectrals
+
             c_bunc_cleanse = {
                 ['name'] = 'Cleanse',
                 ['text'] = {
@@ -625,9 +654,10 @@ return {
             j_bunc_shepherd = {
                 ['name'] = 'Shepherd Joker',
                 ['text'] = {
-                    [1] = 'This Joker gains {C:chips}+#1#{} Chips',
-                    [2] = 'when played hand contains a {C:attention}Pair',
-                    [3] = '{C:inactive}(Currently {C:chips}+#2#{C:inactive} Chips)'
+                    [1] = 'Gains {C:chips}+#1#{} Chips',
+                    [2] = 'when played hand',
+                    [3] = 'contains a {C:attention}Pair',
+                    [4] = '{C:inactive}(Currently {C:chips}+#2#{C:inactive} Chips)'
                 }
             },
             j_bunc_knight = {
@@ -934,9 +964,9 @@ return {
                 ['text'] = {
                     [1] = 'When {C:tarot}Tarot{} card is used,',
                     [2] = '{C:green}#1# in #2#{} chance to add',
-                    [3] = '{C:dark_edition}Foil{}, {C:dark_edition}Holographic{}, or',
-                    [4] = '{C:dark_edition}Polychrome{} edition to a random',
-                    [5] = 'selected playing card'
+                    [3] = '{C:dark_edition}Foil{}, {C:dark_edition}Holographic{},',
+                    [4] = '{C:dark_edition}Polychrome{}, or {C:dark_edition}Glitter{} edition',
+                    [5] = 'to a random selected playing card'
                 }
             },
             j_bunc_vandalism = {
