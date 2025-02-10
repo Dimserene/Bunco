@@ -796,6 +796,7 @@ SMODS.Atlas({key = 'bunco_jokers_legendary', path = 'Jokers/JokersLegendary.png'
 SMODS.Atlas({key = 'bunco_jokers_the_joker', path = 'Jokers/JokerBlind.png', px = 71, py = 95})
 SMODS.Atlas({key = 'bunco_jokers_taped', path = 'Jokers/JokerTaped.png', px = 127, py = 113})
 SMODS.Atlas({key = 'bunco_jokers_headache', path = 'Jokers/JokerHeadache.png', px = 71, py = 95})
+SMODS.Atlas({key = 'bunco_jokers_winking', path = 'Jokers/JokerWinking.png', px = 71, py = 95})
 
 SMODS.Sound({key = 'gunshot', path = 'gunshot.ogg'})
 SMODS.Sound({key = 'mousetrap', path = 'mousetrap.ogg'})
@@ -2070,9 +2071,11 @@ create_joker({ -- Slothful
 
 create_joker({ -- Neon
     name = 'Neon', position = 28,
-    vars = {{bonus = 0.2}, {xmult = 1}},
+    custom_vars = function(self, info_queue, card)
+        info_queue[#info_queue+1] = G.P_CENTERS.e_bunc_fluorescent
+    end,
     rarity = 'Uncommon', cost = 5,
-    blueprint = true, eternal = true, perishable = false,
+    blueprint = false, eternal = true,
     unlocked = false,
     check_for_unlock = function(self, args)
         if args.type == 'hand_contents' then
@@ -2088,25 +2091,14 @@ create_joker({ -- Neon
         end
     end,
     calculate = function(self, card, context)
-        if context.debuffed_card then
-            card.ability.extra.xmult = card.ability.extra.xmult + card.ability.extra.bonus
-            forced_message(localize('k_upgrade_ex'), card, G.C.MULT, true)
-        end
-
-        if context.joker_main then
-            if card.ability.extra.xmult ~= 1 then
-                return {
-                    message = localize {
-                        type = 'variable',
-                        key = 'a_xmult',
-                        vars = { card.ability.extra.xmult }
-                    },
-                    Xmult_mod = card.ability.extra.xmult,
-                    card = card
-                }
+        if context.enhance_card and not context.blueprint then
+            if context.enhanced_card:get_edition() == nil then
+                context.enhanced_card:set_edition({bunc_fluorescent = true})
+                event({func = function() big_juice(card) return true end})
             end
         end
     end
+
 })
 
 create_joker({ -- Gameplan
@@ -2774,6 +2766,13 @@ create_joker({ -- Vandalism
             card.children.center.states.drag = card.states.drag
             card.children.center.states.collide.can = false
             card.children.center:set_role({major = card, role_type = 'Glued', draw_major = card})
+
+            card.children.back = Sprite(card.T.x, card.T.y, card.T.w, card.T.h, G.ASSET_ATLAS['bunc_bunco_jokers_winking'], coordinate(1))
+            card.children.back.states.hover = card.states.hover
+            card.children.back.states.click = card.states.click
+            card.children.back.states.drag = card.states.drag
+            card.children.back.states.collide.can = false
+            card.children.back:set_role({major = card, role_type = 'Glued', draw_major = card})
         end
     end
 })
@@ -3104,7 +3103,7 @@ create_joker({ -- Wino
 
 create_joker({ -- Bounty Hunter
     name = 'Bounty Hunter', position = 52,
-    vars = {{bonus = 3}, {mult = 0}, {unlock = -20}},
+    vars = {{bonus = 1}, {mult = 0}, {unlock = -20}},
     locked_vars = function(self, info_queue, card)
         return {vars = {self.config.extra.unlock}}
     end,

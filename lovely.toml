@@ -1005,7 +1005,7 @@ end
 
 '''
 
-# function evaluate_play (Nil Bill, Neon)
+# function evaluate_play (Nil Bill)
 [[patches]]
 [patches.pattern]
 target = 'functions/common_events.lua'
@@ -1023,6 +1023,21 @@ if eval_type == 'debuff' then
             end
         end
     end
+end
+
+'''
+
+# function Card:set_ability() (Neon Joker)
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = 'self.config.center = center'
+position = 'after'
+match_indent = true
+payload = '''
+
+if center and (not initial) and (old_center ~= center) and center.set == 'Enhanced' then
+    SMODS.calculate_context({enhance_card = true, enhanced_card = self})
 end
 
 '''
@@ -3540,3 +3555,14 @@ pattern = '''if _key == "wheel_of_fortune" or _key == "aura" then -- set base ga
 position = 'after'
 match_indent = true
 payload = '''   if BUNCOMOD.content.config.gameplay_reworks then table.insert(_options, 'e_bunc_glitter') end'''
+
+# Back sprite of a card check
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''if true then
+self.children.back = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[(G.GAME.viewed_back or G.GAME.selected_back) and ((G.GAME.viewed_back or G.GAME.selected_back)[G.SETTINGS.colourblind_option and 'hc_atlas' or 'lc_atlas'] or (G.GAME.viewed_back or G.GAME.selected_back).atlas) or 'centers'], self.params.bypass_back or (self.playing_card and G.GAME[self.back].pos or G.P_CENTERS['b_red'].pos))'''
+position = 'at'
+match_indent = true
+payload = '''if not self.children.back then
+    self.children.back = Sprite(self.T.x, self.T.y, self.T.w, self.T.h, G.ASSET_ATLAS[(G.GAME.viewed_back or G.GAME.selected_back) and ((G.GAME.viewed_back or G.GAME.selected_back)[G.SETTINGS.colourblind_option and 'hc_atlas' or 'lc_atlas'] or (G.GAME.viewed_back or G.GAME.selected_back).atlas) or 'centers'], self.params.bypass_back or (self.playing_card and G.GAME[self.back].pos or G.P_CENTERS['b_red'].pos))'''
