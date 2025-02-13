@@ -56,6 +56,8 @@ return {
             bunc_least_played_hand = '(least played hand)',
             bunc_blade = '(1.5X blind score)',
             bunc_exceeded_score = 'Exceeded the limit!',
+            bunc_min_ante = 'Minimum Ante:',
+            bunc_final_blind = 'Final Blind',
 
             -- Consumable types
 
@@ -1312,7 +1314,7 @@ return {
                 ['text'] = {
                     [1] = '{C:green}#1# in #2#{} chance to add',
                     [2] = '{C:dark_edition}Polychrome{} edition',
-                    [3] = 'to a random scored card if',
+                    [3] = 'to all scored cards if',
                     [4] = 'hand contains a {C:attention}Spectrum'
                 }
             },
